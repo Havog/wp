@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: openwa
+    runtime: docker
+    plan: standard            # 2 GB RAM; Chrome needs it. Disks need a paid plan.
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    disk:
+      name: openwa-data
+      mountPath: /app/data    # SQLite DB, session login, API key; survives deploys
+      sizeGB: 5
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "2785"
+      - key: AUTO_START_SESSIONS
+        value: "true"
+      - key: ENGINE_TYPE
+        value: whatsapp-web.js
+      - key: PUPPETEER_HEADLESS
+        value: "true"
+      - key: PUPPETEER_ARGS
+        value: --no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage,--disable-gpu
+      - key: DATABASE_TYPE
+        value: sqlite
+      - key: DATABASE_SYNCHRONIZE
+        value: "false"
+      - key: REDIS_ENABLED
+        value: "false"
+      - key: QUEUE_ENABLED
+        value: "false"
+      - key: CACHE_ENABLED
+        value: "false"
+      - key: STORAGE_TYPE
+        value: local
+      - key: API_MASTER_KEY
+        generateValue: true   # production requires 32+ characters; Render generates a long random one
+      - key: BASE_URL
+        value: https://openwa0974.onrender.com        # replace with your real Render URL
+      - key: CORS_ORIGINS
+        value: https://openwa0974.onrender.com        # "*" is refused in production
